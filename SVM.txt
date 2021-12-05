@@ -1,0 +1,49 @@
+# import the Libraries
+import numpy as np                         # used for multidimensional array
+import pandas as pd                        # used for import the dataset
+import matplotlib.pyplot as plt            # used for plt the graph
+
+# import the dataset
+dataset = pd.read_csv('https://archive.ics.uci.edu/ml/machine-learning-databases/blood-transfusion/transfusion.data')
+X = dataset.iloc[:,:-1].values          # predictor attributes
+y = dataset.iloc[:, -1].values          # target attributes
+
+# split the dataset into test set and train set
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X,y , test_size=0.2, random_state=0)
+
+# feature Scaling
+from sklearn.preprocessing import StandardScaler
+sc_X = StandardScaler()
+X_train = sc_X.fit_transform(X_train)
+X_test = sc_X.transform(X_test)
+
+
+# import support vector machine from scikit learn
+from sklearn.svm import SVC
+
+
+# init the svm model
+classifier = SVC(kernel = 'linear', random_state=0)
+
+
+# fit the training data into our SVM Classifer model
+classifier.fit(X_train,y_train)
+
+
+
+# making a prediction
+y_pred = classifier.predict(X_test)
+y_pred
+
+
+# confusion metric
+from sklearn.metrics import confusion_matrix
+cm = confusion_matrix(y_test, y_pred)
+cm
+
+
+# accuracy score
+from sklearn.metrics import accuracy_score
+ac = accuracy_score(y_test, y_pred)
+ac

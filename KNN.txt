@@ -1,0 +1,66 @@
+#Importing required library
+import pandas as pd
+import numpy as np
+
+#Setting names for the csv header
+headernames = ['sepal-length', 'sepal-width', 'petal-length', 'petal-width', 'Class']
+
+#opening the csv file
+dataset = pd.read_csv("IRIS.csv", names = headernames)
+dataset.head()
+
+#Seperating the input features and output labels
+X = dataset.iloc[1:, :-1].values
+y = dataset.iloc[1:, 4].values
+
+#converting text labels to numeric form
+labels, unique = pd.factorize(y)
+
+#splitting data in test and train segments
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, labels, test_size = 0.40)
+
+def KNNClassify(X_test, Y_train = y_train,X_train = X_train, k = 7):
+    
+    min_dist = []
+    #for every example in the training set, calculate eucledien distance against the test example
+    for i,point in enumerate(X_train):
+        d1 = (float(point[0])-float(X_test[0]))**2
+        d2 = (float(point[1])-float(X_test[1]))**2
+        d3 = (float(point[2])-float(X_test[2]))**2
+        d4 = (float(point[3])-float(X_test[3]))**2
+        dist = np.sqrt(d1+d2+d3+d4)
+        #append the calculated distance in a list
+        min_dist.append((dist,Y_train[i]))
+    
+    #sort distances in ascending order    
+    min_dist.sort()
+    
+    #get top k nearest neighbours
+    neighbours = min_dist[:k]
+    
+    #get index of the minimum distances
+    output = []
+    for tup in neighbours:
+        output.append(tup[1])
+        
+    #check which label has majority
+    values, counts = np.unique(output, return_counts=True)
+    
+    #return label with majority occurence
+    max_idx = np.argmax(counts)
+    return values[max_idx]
+
+#getting predicted values using our algorithm
+predictions = list(map(KNNClassify, X_test))
+
+def accuracy(pred , y_test):
+    count = 0
+    for i in range(len(pred)):
+        if pred[i] == y_test[i]:
+            count +=1
+            
+    return print("Accuracy =", (count/len(pred))*100, "%")
+
+#calling the accuracy function
+accuracy(predictions, y_test)

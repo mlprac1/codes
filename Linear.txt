@@ -1,0 +1,84 @@
+%matplotlib inline
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+plt.rcParams['figure.figsize'] = (20.0, 10.0)
+
+# Reading Data
+data = pd.read_csv(r'./headbrain.csv')#data is the dataframe
+print(data.shape)
+data.head()
+
+# Collecting X and Y
+X = data['Head Size(cm^3)'].values
+print(X)
+
+Y = data['Brain Weight(grams)'].values
+print(Y)
+
+#In order to find the value of m and c, you first need to calculate the mean of X and Y
+
+# Mean X and Y
+mean_x = np.mean(X)
+mean_y = np.mean(Y)
+
+print('mean_x ',mean_x)
+print('mean_y ',mean_y)
+
+
+# Total number of values
+n = len(X)
+
+# Using the formula to calculate m and c
+# Least Square Method
+numer = 0
+denom = 0
+for i in range(n):
+    numer += (X[i] - mean_x) * (Y[i] - mean_y)
+    denom += (X[i] - mean_x) ** 2
+m = numer / denom
+print('slope of best-fit line ',m)
+
+
+
+# y = mx+c
+# ymean = m*xmean + c
+c = mean_y - (m * mean_x)
+#1282.873417721519- 0.26342933948939945*3633.9915611814345
+print(c)
+
+
+
+# Print coefficients
+print(m, c)
+
+
+
+y_pred = m*X+c
+
+X.shape
+
+
+# Ploting Line
+plt.scatter(X, y_pred, color='#52b920', label='Regression Line')
+
+
+# Ploting Scatter Points
+plt.scatter(X, Y, c='#ef4423', label='Scatter Plot')
+plt.scatter(X, y_pred, color='#52b920', label='Regression Line') 
+plt.xlabel('Head Size in cm3')
+plt.ylabel('Brain Weight in grams')
+plt.legend()
+plt.show()
+
+
+#R square – Implementation
+ss_t=0
+ss_r=0
+
+for i in range(n):
+    y_pred = c + m * X[i]
+    ss_r += (y_pred-Y[i])**2
+    ss_t += (Y[i]-mean_y)**2
+r2 = 1 - (ss_r/ss_t)
+print(r2)
